@@ -1,0 +1,15 @@
+[
+    {
+	"type":"readers.las",
+        "filename":"tree_height_only.laz"
+    },	
+    {
+        "type":"writers.text",
+        "format":"csv",
+        "order":"X,Y,HeightAboveGround",
+        "keep_unspecified":"false",
+	"delimiter":" ",
+        "filename":"tree_height_only.txt",
+	"write_header":"false"
+    }
+]
