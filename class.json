@@ -1,0 +1,12 @@
+[
+    "tree_height.laz",
+    {
+	        "type":"filters.expression",
+		"expression":"((HeightAboveGround > 0) && Classification == 5)"
+    },
+    {
+        "type":"writers.las",
+        "filename":"tree_height_only.laz",
+        "extra_dims":"HeightAboveGround=float32"
+    }
+]
