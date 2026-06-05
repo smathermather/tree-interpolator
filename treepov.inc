@@ -32,7 +32,7 @@ union {
                         object  { 
 	                      TREE 
 #						 scale 2.0
-        		         scale tree_height[Index] 
+        		        scale tree_height[Index] 
 		                rotate <0,rand(Rnd_1)*360,0> 
 		                translate tree_coords[Index]  
         	        } 

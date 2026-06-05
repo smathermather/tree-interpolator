@@ -86,7 +86,7 @@ uly=`echo "scale=20; $centery + $camera_size / 2" | bc`
 # Using what we know, let's build the pov file for rendering
 echo "//Set the center of image" > render.pov
 echo "\n" >> render.pov
-echo "#version 3.6;" >> render.pov
+echo "#version 3.7;" >> render.pov
 echo "#declare scene_center_x=$centerx;" >> render.pov
 echo "#declare scene_center_y=$centery;" >> render.pov
 
