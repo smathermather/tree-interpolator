@@ -8,7 +8,7 @@
 
 background {color <0, 0, 0>}
 
-#declare Camera_Location = <scene_center_x,175,scene_center_y> ;
+#declare Camera_Location = <scene_center_x,200,scene_center_y> ;
 #declare Camera_Lookat   = <scene_center_x,0,scene_center_y> ; 
  
 // Use orthographic camera for true plan view 

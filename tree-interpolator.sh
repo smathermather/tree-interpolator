@@ -11,66 +11,26 @@
 # End with text file with X, Y, and Tree Height
 # -----------------------------------------------------
 
-#[
-#    "input.las",
-#    {
-#        "type":"filters.hag_delaunay"
-#    },
-#    {
-#        "type":"writers.las",
-#        "filename":"tree_height.laz",
-#        "extra_dims":"HeightAboveGround=float32"
-#    }
-#]
-echo "	Calculating Tree Height..."
-pdal pipeline height.json
-
+echo "Calculating Tree Height..."
+pdal pipeline height.json && echo "Tree height calculated."
 
 # Eliminate all but tall vegetation (class 5)
 
-#[
-#    "tree_height.laz",
-#    {
-#                "type":"filters.expression",
-#                "expression":"((HeightAboveGround > 0) && Classification == 5)"
-#    },
-#    {
-#        "type":"writers.las",
-#        "filename":"tree_height_only.laz",
-#        "extra_dims":"HeightAboveGround=float32"
-#    }
-#]
 
-echo "		 								Eliminating non-veg points..."
-pdal pipeline class.json
+echo "Eliminating non-high-veg points..."
 
-#[
-#    {
-#        "type":"readers.las",
-#        "filename":"tree_height_only.laz"
-#    },
-#    {
-#        "type":"writers.text",
-#        "format":"csv",
-#        "order":"X,Y,HeightAboveGround",
-#        "keep_unspecified":"false",
-#        "delimiter":" ",
-#        "filename":"tree_height_only.txt",
-#        "write_header":"false"
-#    }
-#]
+pdal pipeline class.json && echo "non-veg points revoved"
 
-echo "
-  Write out text file..."
-pdal pipeline text.json
+echo "Write out text file..."
+pdal pipeline text.json && echo "Text output written."
 
 # -----------------------------------------------------
 # Prepare Include Files for Povray
 # -----------------------------------------------------
 
 # Count number of tree height points
-numlines=`more tree_height_only.txt | wc -l`
-echo " 										$numlines points in resultant las."
+numlines=`more tree_height_only.txt | wc -l` && echo "$numlines points in resultant text file."
+#numlines=`pdal info tree_height_only.laz | grep count | uniq | awk '{print $2}' | tr ',' ' '` && echo "$numlines points in resultant text file."
 
 # Build include files of tree locations and heights for PovRay rendering
 # Tree locations are fixed at height of 0
@@ -79,13 +39,13 @@ echo " 										$numlines points in resultant las."
 echo "#declare tree_coords = array["$numlines"]{" > tree_height_coords.inc
 
 # Write X, 0, Y locations
-more tree_height_only.txt | grep -v ' 0' | awk '{print "<" $1 ", 0, " $2 ">" };' >> tree_height_coords.inc
+more tree_height_only.txt | awk '{print "<" $1 ", 0, " $2 ">" };' >> tree_height_coords.inc
 
 # Write tree height array header
-echo "} #declare tree_height = array["$numlines"]{" >> tree_height_coords.inc
+echo "} \n #declare tree_height = array["$numlines"]{" >> tree_height_coords.inc
 
 # Write tree heights
-more tree_height_only.txt | grep -v ' 0' |  awk '{ print $3 "," };' >> tree_height_coords.inc
+more tree_height_only.txt | awk '{ print $3 "," };' >> tree_height_coords.inc
 echo '}' >> tree_height_coords.inc
 
 # -----------------------------------------------------
@@ -94,7 +54,8 @@ echo '}' >> tree_height_coords.inc
 # -----------------------------------------------------
 
 # Calculate extent of point cloud using pdal tindex
-pdal tindex create --tindex tree_height_boundary.sqlite --filespec tree_height_only.laz -f SQLite
+echo "Indexing tree_height file..."
+rm -f tree_height_boundary.sqlite && pdal tindex create --tindex tree_height_boundary.sqlite --filespec tree_height_only.laz -f SQLite && echo "Tree boundary created."
 
 # From index file we'll calculate scene extent and center
 bb=`ogrinfo -ro -al -so -geom=NO tree_height_boundary.sqlite | grep Extent | tr '(' ' ' | tr ')' ' ' | tr ',' ' '`

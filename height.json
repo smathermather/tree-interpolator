@@ -1,5 +1,5 @@
 [
-    "input.las",
+    "N2220590.laz",
     {
         "type":"filters.hag_delaunay"
     },
